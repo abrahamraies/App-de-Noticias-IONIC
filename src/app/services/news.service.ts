@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { Article, ArticlesByCategoryAndPage, RespuestaAPI } from '../interfaces';
 import { map } from 'rxjs/operators';
 
+import { storedArticlesByCategory } from '../data/mock-news';
 
 const apiKey = environment.apiKey;
 const apiUrl = environment.apiUrl;
@@ -14,7 +15,7 @@ const apiUrl = environment.apiUrl;
 })
 export class NewsService {
 
-  private articlesByCategoryAndPage : ArticlesByCategoryAndPage = {}
+  private articlesByCategoryAndPage : ArticlesByCategoryAndPage = storedArticlesByCategory
 
   constructor( private http: HttpClient) { }
 
@@ -32,6 +33,8 @@ export class NewsService {
   }
 
   getTopHeadlinesByCategory( category: string, loadMore: boolean = false):Observable<Article[]>{
+
+    return of(this.articlesByCategoryAndPage[category].articles);
 
     if (loadMore) {
       return this.getArticlesByCategory( category);

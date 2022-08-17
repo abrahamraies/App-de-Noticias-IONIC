@@ -58,12 +58,13 @@ export class ArticleComponent{
     const shareBtn: ActionSheetButton = {
       text: 'Compartir',
       icon: 'share-outline',
+      
       handler: () => this.onShareArticle()
     };
-
-    if (this.platform.is('capacitor')){
-      normalBtns.unshift(shareBtn);
-    }
+    normalBtns.unshift(shareBtn);
+    //if (this.platform.is('capacitor')){
+    //  normalBtns.unshift(shareBtn);
+    //}
 
     const actionSheet = await this.actionSheetCtrl.create({
       header: 'Opciones',
@@ -74,16 +75,33 @@ export class ArticleComponent{
 
   onShareArticle(){
 
-    const { title,source,url } = this.article
+    if( this.platform.is('cordova')){
+      const { title,source,url } = this.article
 
     this.socialSharing.share(
       title,
       source.name,
       null,
       url
-    );
+      );
+    }else{
+      if (navigator.share) {
+        navigator.share({
+          title: this.article.title,
+          text: this.article.description,
+          url: this.article.url,
+        })
+          .then(() => console.log('Successful share'))
+          .catch((error) => console.log('Error sharing', error));
+      }else{
+        console.log("Este metodo no esta soportado.")
+      }
+    }
   }
+
+    
   onToggleFavorite(){
     this.storageService.saveRemoveArticle(this.article);
   }
+
 }
